@@ -15,18 +15,12 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('🔵 PlantsListScreen build вызван');
-
     try {
       final container = PlantsContainer.of(context);
       final plants = container.plants;
-
-      print('🔵 Количество растений в списке: ${plants.length}');
-      print('🔵 Список растений:');
       for (var plant in plants) {
         print('   - ${plant.name}');
       }
-
       return Scaffold(
         appBar: AppBar(
           title: const Text('Мои растения'),
@@ -72,14 +66,12 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            print('🟠 FAB нажата, открываем форму');
             await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => PlantFormScreen(),
               ),
             );
-            print('🟠 Вернулись с формы, обновляем состояние');
             setState(() {});
           },
           tooltip: 'Добавить растение',
@@ -87,7 +79,6 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
         ),
       );
     }  catch (e) {
-        print('🔴 ОШИБКА в PlantsListScreen: $e');
         return Scaffold(
           appBar: AppBar(title: Text('Ошибка')),
           body: Center(child: Text('Ошибка: $e')),

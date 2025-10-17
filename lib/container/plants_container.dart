@@ -28,7 +28,6 @@ class _PlantsContainerState extends State<PlantsContainer> {
     required String name,
     required String type,
   }) {
-    print('🟢 CREATE_PLANT вызван: name=$name, type=$type');
     final plant = Plant(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name,
@@ -36,11 +35,8 @@ class _PlantsContainerState extends State<PlantsContainer> {
       lastWatered: DateTime.now(),
       createdAt: DateTime.now(),
     );
-    print('🟢 Создан объект Plant: ${plant.name}');
     setState(() {
       _plants.add(plant);
-      print('🟢 Растение добавлено в список. Теперь растений: ${_plants.length}');
-      print('🟢 Список растений:');
       for (var p in _plants) {
         print('   - ${p.name} (${p.id})');
       }
