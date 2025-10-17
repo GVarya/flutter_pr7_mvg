@@ -24,22 +24,23 @@ class _PlantsContainerState extends State<PlantsContainer> {
 
   List<Plant> get plants => List.unmodifiable(_plants);
 
+
   void createPlant({
     required String name,
     required String type,
+    String? description,
   }) {
     final plant = Plant(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name,
       type: type,
+      description: description,
       lastWatered: DateTime.now(),
       createdAt: DateTime.now(),
     );
+
     setState(() {
       _plants.add(plant);
-      for (var p in _plants) {
-        print('   - ${p.name} (${p.id})');
-      }
     });
   }
 

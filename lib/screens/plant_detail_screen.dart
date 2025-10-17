@@ -54,8 +54,7 @@ class PlantDetailScreen extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         container.deletePlant(currentPlant.id);
-                        Navigator.pop(context); // Закрываем диалог
-                        Navigator.pop(context); // Возвращаемся на список
+                        Navigator.pop(context);
                       },
                       child: const Text(
                         'Удалить',
@@ -94,6 +93,28 @@ class PlantDetailScreen extends StatelessWidget {
                         color: Colors.grey[600],
                       ),
                     ),
+                    if (currentPlant.description != null && currentPlant.description!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      const Divider(height: 1),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Описание:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        currentPlant.description!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade800,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
                     const Divider(height: 32),
                     Row(
                       children: [

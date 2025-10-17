@@ -16,6 +16,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _typeController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
     if (widget.plant != null) {
       _nameController.text = widget.plant!.name;
       _typeController.text = widget.plant!.type;
+      _descriptionController.text = widget.plant!.description ?? '';
     }
   }
 
@@ -30,42 +32,36 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
   void dispose() {
     _nameController.dispose();
     _typeController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
   void _saveForm(BuildContext context) {
-    print('🟡 _SAVE_FORM вызван');
     if (_formKey.currentState!.validate()) {
-      print('🟡 Форма валидна');
-
-      try {
-        final container = PlantsContainer.of(context);
-        print('🟡 Контейнер получен успешно');
-
-        if (widget.plant == null) {
-          print('🟡 Создание нового растения');
-          container.createPlant(
-            name: _nameController.text.trim(),
-            type: _typeController.text.trim(),
-          );
-          print('🟡 Метод createPlant вызван');
-        } else {
-          print('🟡 Редактирование существующего растения');
-          container.updatePlant(
-            widget.plant!.copyWith(
-              name: _nameController.text.trim(),
-              type: _typeController.text.trim(),
-            ),
-          );
-        }
-
-        print('🟡 Закрытие формы');
-        Navigator.pop(context);
-      } catch (e) {
-        print('🔴 ОШИБКА в _saveForm: $e');
-      }
+    final container = PlantsContainer.of(context);
+    if (widget.plant == null) {
+      container.createPlant(
+        name: _nameController.text.trim(),
+        type: _typeController.text.trim(),
+        description: _descriptionController.text.trim().isEmpty
+            ? null
+            : _descriptionController.text.trim(),
+      );
     } else {
-      print('🔴 Форма невалидна');
+      container.updatePlant(
+        widget.plant!.copyWith(
+          name: _nameController.text.trim(),
+          type: _typeController.text.trim(),
+          description: _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
+        ),
+      );
+    }
+
+    Navigator.pop(context);
+
+    } else {
     }
   }
 
@@ -112,6 +108,18 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 24),
+
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Описание растения',
+                  hintText: 'Необязательное поле. Можно добавить особенности ухода, местоположение и т.д.',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(

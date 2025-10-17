@@ -1,7 +1,7 @@
 class Plant {
   final String id;
   final String name;
-  final String description;
+  final String? description;
   final String type;
   final DateTime lastWatered;
   final DateTime createdAt;
@@ -9,7 +9,7 @@ class Plant {
   Plant({
     required this.id,
     required this.name,
-    required this.description,
+    this.description,
     required this.type,
     required this.lastWatered,
     required this.createdAt,
