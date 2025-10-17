@@ -53,8 +53,10 @@ class PlantDetailScreen extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        container.deletePlant(currentPlant.id);
+                        container.deletePlant(currentPlant.id, context);
                         Navigator.pop(context);
+                        Navigator.pop(context);
+
                       },
                       child: const Text(
                         'Удалить',

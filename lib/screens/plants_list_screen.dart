@@ -44,13 +44,14 @@ class _PlantsListScreenState extends State<PlantsListScreen> {
             final plant = plants[index];
             return PlantItem(
               plant: plant,
-              onTap: () {
+              onTap: () async{
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => PlantDetailScreen(plant: plant),
                   ),
                 );
+                setState(() {});
               },
               onWater: () {
                 container.waterPlant(plant.id);

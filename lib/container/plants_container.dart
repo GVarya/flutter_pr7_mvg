@@ -53,7 +53,7 @@ class _PlantsContainerState extends State<PlantsContainer> {
     });
   }
 
-  void deletePlant(String id) {
+  void deletePlant(String id, BuildContext context) {
     Plant? deletedPlant;
     int? deletedIndex;
 
@@ -66,7 +66,6 @@ class _PlantsContainerState extends State<PlantsContainer> {
     });
 
     if (deletedPlant != null && deletedIndex != null) {
-      final context = this.context;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Растение "${deletedPlant!.name}" удалено'),
