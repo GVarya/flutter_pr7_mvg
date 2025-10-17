@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/plant.dart';
 
+
 class PlantsContainer extends StatefulWidget {
   final Widget child;
 
@@ -10,7 +11,11 @@ class PlantsContainer extends StatefulWidget {
   State<PlantsContainer> createState() => _PlantsContainerState();
 
   static _PlantsContainerState of(BuildContext context) {
-    return context.findAncestorStateOfType<_PlantsContainerState>()!;
+    final state = context.findAncestorStateOfType<_PlantsContainerState>();
+    if (state == null) {
+      throw FlutterError('PlantsContainer not found in context');
+    }
+    return state;
   }
 }
 
@@ -23,6 +28,7 @@ class _PlantsContainerState extends State<PlantsContainer> {
     required String name,
     required String type,
   }) {
+    print('🟢 CREATE_PLANT вызван: name=$name, type=$type');
     final plant = Plant(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name,
@@ -30,8 +36,14 @@ class _PlantsContainerState extends State<PlantsContainer> {
       lastWatered: DateTime.now(),
       createdAt: DateTime.now(),
     );
+    print('🟢 Создан объект Plant: ${plant.name}');
     setState(() {
       _plants.add(plant);
+      print('🟢 Растение добавлено в список. Теперь растений: ${_plants.length}');
+      print('🟢 Список растений:');
+      for (var p in _plants) {
+        print('   - ${p.name} (${p.id})');
+      }
     });
   }
 
@@ -47,6 +59,7 @@ class _PlantsContainerState extends State<PlantsContainer> {
   void deletePlant(String id) {
     Plant? deletedPlant;
     int? deletedIndex;
+
     setState(() {
       final index = _plants.indexWhere((p) => p.id == id);
       if (index != -1) {
@@ -56,6 +69,7 @@ class _PlantsContainerState extends State<PlantsContainer> {
     });
 
     if (deletedPlant != null && deletedIndex != null) {
+      final context = this.context;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Растение "${deletedPlant!.name}" удалено'),

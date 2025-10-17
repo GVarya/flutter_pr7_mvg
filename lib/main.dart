@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pr5_mvg/theme.dart';
 import 'container/plants_container.dart';
+import 'screens/plants_list_screen.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +16,8 @@ class MyApp extends StatelessWidget {
     return PlantsContainer(
       child: MaterialApp(
         title: 'Учет домашних растений',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-          useMaterial3: true,
-        ),
+        theme: AppTheme.lightTheme,
+        home: const PlantsListScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
