@@ -2,6 +2,7 @@ class Plant {
   final String id;
   final String name;
   final String? description;
+  final String? imageUrl;
   final String type;
   final DateTime lastWatered;
   final DateTime createdAt;
@@ -10,6 +11,7 @@ class Plant {
     required this.id,
     required this.name,
     this.description,
+    this.imageUrl,
     required this.type,
     required this.lastWatered,
     required this.createdAt,
