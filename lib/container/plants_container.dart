@@ -29,12 +29,14 @@ class _PlantsContainerState extends State<PlantsContainer> {
     required String name,
     required String type,
     String? description,
+    String? imageUrl,
   }) {
     final plant = Plant(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name,
       type: type,
       description: description,
+      imageUrl: imageUrl,
       lastWatered: DateTime.now(),
       createdAt: DateTime.now(),
     );

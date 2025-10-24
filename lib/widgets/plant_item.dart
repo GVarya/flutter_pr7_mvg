@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/plant.dart';
 
@@ -18,16 +19,7 @@ class PlantItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.green,
-          child: Text(
-            plant.name[0].toUpperCase(),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
+        leading: _buildPlantImage(),
         title: Text(
           plant.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -42,4 +34,53 @@ class PlantItem extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildPlantImage() {
+    if (plant.imageUrl != null && plant.imageUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: plant.imageUrl!,
+        imageBuilder: (context, imageProvider) => Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              image: imageProvider,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        placeholder: (context, url) => CircleAvatar(
+          backgroundColor: Colors.green.shade100,
+          child: const CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+          ),
+        ),
+        errorWidget: (context, url, error) => CircleAvatar(
+          backgroundColor: Colors.green,
+          child: Text(
+            plant.name[0].toUpperCase(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return CircleAvatar(
+      backgroundColor: Colors.green,
+      child: Text(
+        plant.name[0].toUpperCase(),
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
 }
+

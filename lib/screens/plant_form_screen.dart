@@ -17,6 +17,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
   final _nameController = TextEditingController();
   final _typeController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _imageUrlController = TextEditingController();
 
   @override
   void initState() {
@@ -25,6 +26,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
       _nameController.text = widget.plant!.name;
       _typeController.text = widget.plant!.type;
       _descriptionController.text = widget.plant!.description ?? '';
+      _imageUrlController.text = widget.plant!.imageUrl ?? '';
     }
   }
 
@@ -33,6 +35,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
     _nameController.dispose();
     _typeController.dispose();
     _descriptionController.dispose();
+    _imageUrlController.dispose();
     super.dispose();
   }
 
@@ -46,6 +49,9 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),
+        imageUrl: _imageUrlController.text.trim().isEmpty
+            ? null
+            : _imageUrlController.text.trim(),
       );
     } else {
       container.updatePlant(
@@ -55,6 +61,9 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
           description: _descriptionController.text.trim().isEmpty
               ? null
               : _descriptionController.text.trim(),
+          imageUrl: _imageUrlController.text.trim().isEmpty
+              ? null
+              : _imageUrlController.text.trim(),
         ),
       );
     }
@@ -108,6 +117,15 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _imageUrlController,
+                decoration: const InputDecoration(
+                  labelText: 'URL изображения растения',
+                  hintText: 'https://example.com/plant-image.jpg',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 24),
 
