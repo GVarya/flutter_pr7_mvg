@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/plant.dart';
 import '../container/plants_container.dart';
 
-
 class PlantFormScreen extends StatefulWidget {
-  final Plant? plant;
+  final String? plantId;
 
-  const PlantFormScreen({Key? key, this.plant}) : super(key: key);
+  const PlantFormScreen({Key? key, this.plantId}) : super(key: key);
 
   @override
   State<PlantFormScreen> createState() => _PlantFormScreenState();
@@ -14,20 +14,49 @@ class PlantFormScreen extends StatefulWidget {
 
 class _PlantFormScreenState extends State<PlantFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _typeController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _imageUrlController = TextEditingController();
+  late TextEditingController _nameController;
+  late TextEditingController _typeController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _imageUrlController;
+
+  Plant? _plant;
 
   @override
   void initState() {
     super.initState();
-    if (widget.plant != null) {
-      _nameController.text = widget.plant!.name;
-      _typeController.text = widget.plant!.type;
-      _descriptionController.text = widget.plant!.description ?? '';
-      _imageUrlController.text = widget.plant!.imageUrl ?? '';
+    _nameController = TextEditingController();
+    _typeController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _imageUrlController = TextEditingController();
+
+    if (widget.plantId != null) {
+      _loadPlantData();
     }
+  }
+
+  void _loadPlantData() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final container = PlantsContainer.of(context);
+      final plant = container.getPlantById(widget.plantId!);
+
+      if (plant != null) {
+        setState(() {
+          _plant = plant;
+          _nameController.text = plant.name;
+          _typeController.text = plant.type;
+          _descriptionController.text = plant.description ?? '';
+          _imageUrlController.text = plant.imageUrl ?? '';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Растение не найдено'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        context.pop();
+      }
+    });
   }
 
   @override
@@ -41,21 +70,10 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
 
   void _saveForm(BuildContext context) {
     if (_formKey.currentState!.validate()) {
-    final container = PlantsContainer.of(context);
-    if (widget.plant == null) {
-      container.createPlant(
-        name: _nameController.text.trim(),
-        type: _typeController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty
-            ? null
-            : _descriptionController.text.trim(),
-        imageUrl: _imageUrlController.text.trim().isEmpty
-            ? null
-            : _imageUrlController.text.trim(),
-      );
-    } else {
-      container.updatePlant(
-        widget.plant!.copyWith(
+      final container = PlantsContainer.of(context);
+
+      if (widget.plantId == null) {
+        container.createPlant(
           name: _nameController.text.trim(),
           type: _typeController.text.trim(),
           description: _descriptionController.text.trim().isEmpty
@@ -64,19 +82,31 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
           imageUrl: _imageUrlController.text.trim().isEmpty
               ? null
               : _imageUrlController.text.trim(),
-        ),
-      );
-    }
+        );
+      } else {
+        if (_plant != null) {
+          container.updatePlant(
+            _plant!.copyWith(
+              name: _nameController.text.trim(),
+              type: _typeController.text.trim(),
+              description: _descriptionController.text.trim().isEmpty
+                  ? null
+                  : _descriptionController.text.trim(),
+              imageUrl: _imageUrlController.text.trim().isEmpty
+                  ? null
+                  : _imageUrlController.text.trim(),
+            ),
+          );
+        }
+      }
 
-    Navigator.pop(context);
-
-    } else {
+      context.pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isEditing = widget.plant != null;
+    final isEditing = widget.plantId != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -86,13 +116,12 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: [
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Название растения',
+                  labelText: 'Название растения *',
                   hintText: 'Например: Алоэ, Фикус, Монстера',
                   border: OutlineInputBorder(),
                 ),
@@ -107,7 +136,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
               TextFormField(
                 controller: _typeController,
                 decoration: const InputDecoration(
-                  labelText: 'Тип растения',
+                  labelText: 'Тип растения *',
                   hintText: 'Например: Суккулент, Папоротник, Лиана',
                   border: OutlineInputBorder(),
                 ),
@@ -127,8 +156,7 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 24),
-
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 3,

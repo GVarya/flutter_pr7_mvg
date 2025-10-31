@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/plant.dart';
 import '../container/plants_container.dart';
-import 'plant_form_screen.dart';
 
 class PlantDetailScreen extends StatelessWidget {
-  final Plant plant;
+  final String plantId;
 
-  const PlantDetailScreen({Key? key, required this.plant}) : super(key: key);
+  const PlantDetailScreen({Key? key, required this.plantId}) : super(key: key);
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} '
@@ -17,58 +16,55 @@ class PlantDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final container = PlantsContainer.of(context);
-    final currentPlant = container.getPlantById(plant.id) ?? plant;
+    final plant = container.getPlantById(plantId);
+
+    if (plant == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Ошибка'),
+        ),
+        body: const Center(
+          child: Text('Растение не найдено'),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          currentPlant.name,
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: Text(plant.name),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
+            icon: const Icon(Icons.edit),
             tooltip: 'Редактировать',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PlantFormScreen(plant: currentPlant),
-                ),
-              );
+              context.push('/edit/${plant.id}');
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete, color: Colors.white),
+            icon: const Icon(Icons.delete),
             tooltip: 'Удалить',
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text(
-                    'Удалить растение?',
-                    style: TextStyle(color: Colors.green.shade800),
-                  ),
+                  title: const Text('Удалить растение?'),
                   content: Text(
-                    'Вы уверены, что хотите удалить растение "${currentPlant.name}"?',
+                    'Вы уверены, что хотите удалить растение "${plant.name}"?',
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Отмена',
-                        style: TextStyle(color: Colors.grey.shade700),
-                      ),
+                      child: const Text('Отмена'),
                     ),
                     TextButton(
                       onPressed: () {
-                        container.deletePlant(currentPlant.id, context);
+                        container.deletePlant(plant.id, context);
                         Navigator.pop(context);
-                        Navigator.pop(context);
+                        context.pop();
                       },
-                      child: Text(
+                      child: const Text(
                         'Удалить',
-                        style: TextStyle(color: Colors.red.shade700),
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
                   ],
@@ -80,12 +76,12 @@ class PlantDetailScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          if (currentPlant.imageUrl != null && currentPlant.imageUrl!.isNotEmpty)
+          if (plant.imageUrl != null && plant.imageUrl!.isNotEmpty)
             Container(
               height: 200,
               width: double.infinity,
               child: CachedNetworkImage(
-                imageUrl: currentPlant.imageUrl!,
+                imageUrl: plant.imageUrl!,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: Colors.grey.shade200,
@@ -107,7 +103,6 @@ class PlantDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -122,7 +117,7 @@ class PlantDetailScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            currentPlant.name,
+                            plant.name,
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.green.shade900,
@@ -136,7 +131,7 @@ class PlantDetailScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
-                              currentPlant.type,
+                              plant.type,
                               style: TextStyle(
                                 color: Colors.green.shade800,
                                 fontWeight: FontWeight.w500,
@@ -144,7 +139,7 @@ class PlantDetailScreen extends StatelessWidget {
                             ),
                           ),
 
-                          if (currentPlant.description != null && currentPlant.description!.isNotEmpty) ...[
+                          if (plant.description != null && plant.description!.isNotEmpty) ...[
                             const SizedBox(height: 16),
                             const Divider(height: 1),
                             const SizedBox(height: 16),
@@ -158,7 +153,7 @@ class PlantDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              currentPlant.description!,
+                              plant.description!,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey.shade800,
@@ -173,14 +168,14 @@ class PlantDetailScreen extends StatelessWidget {
                             icon: Icons.water_drop,
                             iconColor: Colors.blue.shade700,
                             title: 'Последний полив:',
-                            value: _formatDate(currentPlant.lastWatered),
+                            value: _formatDate(plant.lastWatered),
                           ),
                           const SizedBox(height: 16),
                           _buildInfoRow(
                             icon: Icons.calendar_today,
                             iconColor: Colors.green.shade700,
                             title: 'Добавлено:',
-                            value: _formatDate(currentPlant.createdAt),
+                            value: _formatDate(plant.createdAt),
                           ),
                         ],
                       ),
@@ -189,11 +184,11 @@ class PlantDetailScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () {
-                      container.waterPlant(currentPlant.id);
+                      container.waterPlant(plant.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'Растение "${currentPlant.name}" полито 💧',
+                            'Растение "${plant.name}" полито 💧',
                             style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                           backgroundColor: Colors.green.shade700,
