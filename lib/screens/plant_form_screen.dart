@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_pr5_mvg/screens/plants_list_screen.dart';
 import '../models/plant.dart';
 import '../container/plants_container.dart';
 
@@ -49,12 +49,12 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Растение не найдено'),
             backgroundColor: Colors.red,
           ),
         );
-        context.pop();
+        Navigator.pop(context);
       }
     });
   }
@@ -83,24 +83,13 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
               ? null
               : _imageUrlController.text.trim(),
         );
-      } else {
-        if (_plant != null) {
-          container.updatePlant(
-            _plant!.copyWith(
-              name: _nameController.text.trim(),
-              type: _typeController.text.trim(),
-              description: _descriptionController.text.trim().isEmpty
-                  ? null
-                  : _descriptionController.text.trim(),
-              imageUrl: _imageUrlController.text.trim().isEmpty
-                  ? null
-                  : _imageUrlController.text.trim(),
-            ),
-          );
-        }
       }
 
-      context.pop();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const PlantsListScreen(),
+        ),
+      );
     }
   }
 
@@ -111,6 +100,12 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Редактировать растение' : 'Добавить растение'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -168,16 +163,22 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => _saveForm(context),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+
+              if (!isEditing) ...[
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => _saveForm(context),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(
+                    'Добавить растение',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
-                child: Text(
-                  isEditing ? 'Сохранить изменения' : 'Добавить растение',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
+              ],
             ],
           ),
         ),

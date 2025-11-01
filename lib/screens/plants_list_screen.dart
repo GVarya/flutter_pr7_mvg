@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../container/plants_container.dart';
-import '../widgets/plant_item.dart';
 import '../widgets/app_bottom_navigation.dart';
+import '../widgets/plant_item.dart';
+import 'plant_form_screen.dart';
+import 'plant_detail_screen.dart';
 
 class PlantsListScreen extends StatelessWidget {
   const PlantsListScreen({Key? key}) : super(key: key);
@@ -34,7 +36,12 @@ class PlantsListScreen extends StatelessWidget {
           return PlantItem(
             plant: plant,
             onTap: () {
-              context.push('/plant/${plant.id}');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PlantDetailScreen(plantId: plant.id),
+                ),
+              );
             },
             onWater: () {
               container.waterPlant(plant.id);
@@ -50,7 +57,12 @@ class PlantsListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.push('/add');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PlantFormScreen(),
+            ),
+          );
         },
         tooltip: 'Добавить растение',
         child: const Icon(Icons.add),
@@ -88,18 +100,20 @@ class PlantsListScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             ElevatedButton.icon(
-              onPressed: () => context.push('/add'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PlantFormScreen(),
+                  ),
+                );
+              },
               icon: const Icon(Icons.add),
               label: const Text('Добавить растение'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.shade700,
                 foregroundColor: Colors.white,
               ),
-            ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () => context.go('/care-guide'),
-              child: const Text('Сначала изучите руководство по уходу'),
             ),
           ],
         ),

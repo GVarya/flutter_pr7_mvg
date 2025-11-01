@@ -10,7 +10,6 @@ class StatsScreen extends StatelessWidget {
     final container = PlantsContainer.of(context);
     final plants = container.plants;
 
-    // Статистика
     final totalPlants = plants.length;
     final wateredToday = plants.where((plant) =>
     plant.lastWatered.day == DateTime.now().day

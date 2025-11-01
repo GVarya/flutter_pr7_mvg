@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pr5_mvg/theme.dart';
+import 'package:go_router/go_router.dart';
 import 'container/plants_container.dart';
-import 'app_router.dart';
+import 'screens/plants_list_screen.dart';
+import 'screens/stats_screen.dart';
+import 'screens/care_guide_screen.dart';
+import 'screens/plant_categories_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+final GoRouter _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const PlantsListScreen(),
+    ),
+    GoRoute(
+      path: '/stats',
+      builder: (context, state) => const StatsScreen(),
+    ),
+    GoRoute(
+      path: '/care-guide',
+      builder: (context, state) => const CareGuideScreen(),
+    ),
+    GoRoute(
+      path: '/categories',
+      builder: (context, state) => const PlantCategoriesScreen(),
+    ),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -16,7 +41,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Учет домашних растений',
         theme: AppTheme.lightTheme,
-        routerConfig: appRouter,
+        routerConfig: _router,
         debugShowCheckedModeBanner: false,
       ),
     );
